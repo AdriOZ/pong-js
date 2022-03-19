@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
         peep = document.getElementById('peep'),
         plop = document.getElementById('plop'),
 
-        UPS = 50,
+        UPS = 100,
 
-        FPS = 60;
+        FPS = 100;
 
-    canvas.width = screen.width * 0.6;
+    canvas.width = screen.width * 0.55;
     canvas.height = canvas.width * 3 / 4;
 
     let ball = {
