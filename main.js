@@ -2,11 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
     const
+        /** @type HTMLCanvasElement */
         canvas = document.getElementById('canvas'),
-        context = canvas.getContext('2d'),
-        FPS = 50;
 
-    canvas.width = screen.width * 0.5;
+        /** @type CanvasRenderingContext2D */
+        context = canvas.getContext('2d', { alpha: false }),
+
+        UPS = 50,
+
+        FPS = 60;
+
+    canvas.width = screen.width * 0.6;
     canvas.height = canvas.width * 3 / 4;
 
     let ball = {
@@ -29,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
     paddleLeft.y = canvas.height / 2 - paddleLeft.h / 2;
 
     let paddleRight = {
-        x: canvas.width - 10,
-        y: canvas.height / 2 - 50,
+        x: 0,
+        y: 0,
         w: 10,
         h: 100,
         score: 0,
@@ -53,15 +59,14 @@ document.addEventListener('DOMContentLoaded', function () {
         mouse.y = evt.clientY - bound.top - root.scrollTop;
     });
 
-    setInterval(function () {
-        Update();
-        Draw();
-    }, 1000 / FPS);
+    setInterval(Update, 1000 / UPS);
+    setInterval(Draw, 1000 / FPS);
 
     function Update() {
         MoveBall();
         MovePaddleLeft();
-        MovePaddleRight();
+        // MovePaddleRight();
+        MovePaddleRightImpossible();
     }
 
     function MoveBall() {
@@ -108,6 +113,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function MovePaddleRight() {
         let target = ball.sx > 0 && ball.x >= canvas.width / 2 ? ball.y : canvas.height / 2;
+        let mov = (target - paddleRight.y - paddleRight.h / 2) * paddleRight.speed;
+        let dir = mov >= 0 ? 1 : -1;
+        paddleRight.y += Math.min(paddleRight.maxSpeed, Math.abs(mov)) * dir;
+
+        if (paddleRight.y < 0) {
+            paddleRight.y = 0;
+        } else if (paddleRight.y + paddleRight.h > canvas.height) {
+            paddleRight.y = canvas.height - paddleRight.h;
+        }
+    }
+
+    // In the "impossible" version the computer predicts the movement
+    let predict = null;
+
+    function MovePaddleRightImpossible() {
+        let target;
+
+        if (ball.sx > 0) {
+            if (predict !== null) {
+                target = predict;
+            } else {
+                let initialX = ball.x;
+                let finalX = canvas.width - ball.radius - paddleRight.w;
+                let speed = ball.sy;
+                predict = ball.y;
+
+                while (initialX < finalX) {
+                    initialX += ball.sx;
+                    predict += speed;
+
+                    if (predict > canvas.height - ball.radius || predict < ball.radius) {
+                        speed *= -1;
+                    }
+                }
+                target = predict;
+            }
+        } else {
+            target = canvas.height / 2;
+            predict = null;
+        }
         let mov = (target - paddleRight.y - paddleRight.h / 2) * paddleRight.speed;
         let dir = mov >= 0 ? 1 : -1;
         paddleRight.y += Math.min(paddleRight.maxSpeed, Math.abs(mov)) * dir;
