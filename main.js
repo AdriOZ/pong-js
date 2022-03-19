@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
         /** @type CanvasRenderingContext2D */
         context = canvas.getContext('2d', { alpha: false }),
 
+        peep = document.getElementById('peep'),
+        plop = document.getElementById('plop'),
+
         UPS = 50,
 
         FPS = 60;
@@ -59,8 +62,11 @@ document.addEventListener('DOMContentLoaded', function () {
         mouse.y = evt.clientY - bound.top - root.scrollTop;
     });
 
-    setInterval(Update, 1000 / UPS);
-    setInterval(Draw, 1000 / FPS);
+    Draw();
+    setTimeout(function () {
+        setInterval(Update, 1000 / UPS);
+        setInterval(Draw, 1000 / FPS);
+    }, 3000);
 
     function Update() {
         MoveBall();
@@ -78,9 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ball.y >= paddleRight.y && ball.y <= paddleRight.y + paddleRight.h
         ) {
             ball.sx *= -1;
+            plop.play();
         } else if (ball.x > canvas.width - ball.radius) {
             ResetBall();
             paddleLeft.score++;
+            peep.play();
         }
 
 
@@ -89,16 +97,20 @@ document.addEventListener('DOMContentLoaded', function () {
             ball.y <= paddleLeft.y + paddleLeft.h
         ) {
             ball.sx *= -1;
+            plop.play();
         } else if (ball.x < ball.radius) {
             ResetBall();
             paddleRight.score++;
+            peep.play();
         }
 
         if (ball.y > canvas.height - ball.radius) {
             ball.sy *= -1;
+            plop.play();
         }
         if (ball.y < ball.radius) {
             ball.sy *= -1;
+            plop.play();
         }
     }
 
@@ -165,8 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function ResetBall() {
-        ball.x = canvas.width / 2 - ball.radius / 2;
-        ball.y = canvas.height / 2 - ball.radius / 2;
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
         ball.sx = Random(5, 8) * (ball.sx > 0 ? -1 : 1);
         ball.sy = Random(5, 8) * (Random(1, 100) % 2 == 0 ? 1 : -1);
     }
