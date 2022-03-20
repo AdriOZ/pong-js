@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
         peep = document.getElementById('peep'),
         plop = document.getElementById('plop'),
 
-        UPS = 100,
-
+        UPS = 60,
         FPS = 100;
 
     canvas.width = screen.width * 0.55;
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
         setInterval(Update, 1000 / UPS);
         setInterval(Draw, 1000 / FPS);
-    }, 3000);
+    }, 1000);
 
     function Update() {
         MoveBall();
@@ -84,11 +83,11 @@ document.addEventListener('DOMContentLoaded', function () {
             ball.y >= paddleRight.y && ball.y <= paddleRight.y + paddleRight.h
         ) {
             ball.sx *= -1;
-            plop.play();
+            PlaySound(plop);
         } else if (ball.x > canvas.width - ball.radius) {
             ResetBall();
             paddleLeft.score++;
-            peep.play();
+            PlaySound(peep);
         }
 
 
@@ -97,20 +96,20 @@ document.addEventListener('DOMContentLoaded', function () {
             ball.y <= paddleLeft.y + paddleLeft.h
         ) {
             ball.sx *= -1;
-            plop.play();
+            PlaySound(plop);
         } else if (ball.x < ball.radius) {
             ResetBall();
             paddleRight.score++;
-            peep.play();
+            PlaySound(peep);
         }
 
         if (ball.y > canvas.height - ball.radius) {
             ball.sy *= -1;
-            plop.play();
+            PlaySound(plop);
         }
         if (ball.y < ball.radius) {
             ball.sy *= -1;
-            plop.play();
+            PlaySound(plop);
         }
     }
 
@@ -214,5 +213,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function Random(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    function PlaySound(audio) {
+        try {
+            audio.play();
+        } catch (_) {
+        }
     }
 });
